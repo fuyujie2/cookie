@@ -1,0 +1,29 @@
+version: '3'
+services:
+  mysqlabc:
+    image: mysql:8.0
+    environment:
+      - MYSQL_ROOT_PASSWORD=rootpassword
+      - MYSQL_DATABASE=mydb
+    volumes:
+      - mysql-data:/var/lib/mysql
+    ports:
+      - "3306:3306"
+  java-web-app:
+    build:
+      context: ./java-web-app
+    depends_on:
+      - mysqlabc
+    expose:
+      - 8080
+  nginx:
+    image: nginx:1.21
+    ports:
+      - "80:80"
+    volumes:
+      - ./nginx/html:/usr/share/nginx/html
+      - ./nginx/nginx.conf:/etc/nginx/nginx.conf
+    depends_on:
+      - java-web-app
+volumes:
+  mysql-data:
